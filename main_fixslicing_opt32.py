@@ -1,16 +1,56 @@
 import numpy as np
 import serial
 import os
+import time
+import datetime
+import sys
+import numpy as np
+import scipy.io as spio
 
-ser = serial.Serial()
-ser.baudrate= 115200
-ser.port= "COM3"
-ser.bytesize = 8
-ser.timeout = 1
+osc_en = sys.argv[1]
+
+if (osc_en == "True"):
+    en_oscilloscope = True
+else:
+    en_oscilloscope = False
+
+if en_oscilloscope == True:
+    import Oscilloscope as lecroy
+
+
+no_combinations = 1
+traces_per_file = 200
+samples_per_trace = 25000
+num_traces = traces_per_file * no_combinations
+
+if en_oscilloscope == True:
+    le = lecroy.Oscilloscope()
+    le.connect()
+    le.calibrate()
+    le.displayOn()
+    le.Samples = samples_per_trace
+    le.clearsweeps_all()
+
+if en_oscilloscope == False:
+    import Oscilloscope as lecroy
+    le = lecroy.Oscilloscope()
+    le.connect()
+    le.displayOn()
+    le.clearsweeps_all()
+
+if en_oscilloscope == True:
+      ts = time.time()
+      st = datetime.datetime.fromtimestamp(ts).strftime('AES_Fixslicing_opt32_%Y-%m-%d_%H_%M_%S/')
+      if not os.path.exists(st):
+        os.makedirs(st)
+        os.chdir(st)
+
+
+ser = serial.Serial(baudrate= 115200, port= "COM3", bytesize = 8, timeout = 1)
 ser.open()
+ser.reset_input_buffer()
 
-num_plaintext = 2
-for i in range(num_plaintext):
+for i in range(num_traces):
 
     ser.write(b'S') ##This is to start the program.
     x = ser.read()  ##This is to check if the program has started.
@@ -39,4 +79,16 @@ for i in range(num_plaintext):
 
     print('ciphertext_receive0:' + str(ciphertext_receive0))
     print('ciphertext_receive1:' + str(ciphertext_receive1))
+
+    if en_oscilloscope == True:
+        value_no = (i / traces_per_file)
+        if (i % traces_per_file == traces_per_file - 1):
+            time.sleep(0.1)
+            seqtrace = le.getWaveform_16_1()[0:samples_per_trace * traces_per_file]
+            seqtrace = seqtrace + 32768
+            tmp_traces = np.split(seqtrace, seqtrace.shape[0] / samples_per_trace)
+            spio.savemat("traces_" + str(value_no), {'traces': tmp_traces[0:(traces_per_file):1]}, do_compression=True,
+                         oned_as='row')
+            print("Saving file " + str(time.time() - ts) + " seconds")
+            print("Collected traces: " + str(i + 1))
 

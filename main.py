@@ -59,7 +59,7 @@ f.close()
 
 print("\nSAVE AND PRINT THE CIPHERTEXT: ")
 c = open("./ciphertext_myownAES.txt", "rb")
-#ciph = c.read(16)
+ciph = c.read(16)
 print(ciph)
 
 ciph = c.read(16)
