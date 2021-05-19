@@ -84,8 +84,8 @@ for i in range(num_traces):
         value_no = (i / traces_per_file)
         if (i % traces_per_file == traces_per_file - 1):
             time.sleep(0.1)
-            #seqtrace = le.getWaveform_16_1()[0:samples_per_trace * traces_per_file]
-            seqtrace = list(os.urandom(16))
+            seqtrace = le.getWaveform_16_1()[0:samples_per_trace * traces_per_file]
+            #seqtrace = list(os.urandom(16))
             #seqtrace = seqtrace + 32768 ##This is because the traces are -32768 to 32768. this transform it.  
             tmp_traces = np.split(seqtrace, seqtrace.shape[0] / samples_per_trace)
             spio.savemat("traces_" + str(value_no), {'traces': tmp_traces[0:(traces_per_file):1], 'plaintext0': plaintext0, 'plaintext1': plaintext1,\
