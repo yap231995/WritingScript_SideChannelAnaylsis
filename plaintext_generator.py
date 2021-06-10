@@ -1,5 +1,4 @@
 import scipy.io as spio
-from os.path import dirname, join as pjoin
 import os
 import time
 import datetime
@@ -23,21 +22,26 @@ def splitting_plaintext(plaintext):
         lst.append(byte_val)
     return lst
 
+plaintexts = []
 for i in range(num_plaintext):
-    plaintext = random.randint(0, 2**128) 
+    text = random.randint(0, 2**128)
     print("num_text:" + str(i))
     #print(plaintext)
     #print(hex(plaintext))
-    plaintext = splitting_plaintext(plaintext)
-    spio.savemat("plaintexts"+ str(i)+".mat", {"plaintext": plaintext}, do_compression=True, oned_as='row')
+    text = splitting_plaintext(text)
+    plaintexts.append(text)
 
-    cwd2 = os.getcwd()
-    mat_fname = pjoin(cwd2, "plaintexts"+ str(i)+".mat")
-    #print(mat_fname)
-    mat_contents = spio.loadmat(mat_fname)
-    p = mat_contents["plaintext"]
-    print(list(p[0]))
-    p = list(p[0])
+spio.savemat("plaintexts0.mat", {"plaintext": plaintexts}, do_compression=True, oned_as='row')
+
+
+
+cwd2 = os.getcwd()
+mat_fname = os.path.join(cwd2, "plaintexts0.mat")
+#print(mat_fname)
+mat_contents = spio.loadmat(mat_fname)
+p = mat_contents["plaintext"]
+print(list(p[0]))
+p = list(p[0])
     
 
 
