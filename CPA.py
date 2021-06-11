@@ -115,11 +115,11 @@ def Corr_with_correct_key(pt,traces,master_key, target_byte):
 
 cwd = os.getcwd()
 PATH = os.path.join(cwd,"plaintext_folder")
-num_traces = 1000
+num_traces = 10000
 
 ##Read traces
 cwd = os.getcwd()
-PATH_traces = os.path.join(cwd,"AES_my_own_2021-06-09_17_51_39") ## Need to change this accordingly
+PATH_traces = os.path.join(cwd,"AES_my_own_2021-06-10_11_48_13") ## Need to change this accordingly
 PATH_image = os.path.join(PATH_traces,"images")
 if not os.path.exists(PATH_traces):
     raise("Traces Path does not exist here.")
