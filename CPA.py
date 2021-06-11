@@ -144,21 +144,23 @@ print("Finished loading Plaintext")
 
 
 master_key = np.array([0x2b,0x7e,0x15,0x16,0x28,0xae,0xd2,0xa6,0xab,0xf7,0x15,0x88,0x09,0xcf,0x4f,0x3c])
-target_byte = 0
-hypothesis_key = []
-val = []
-corr_matrix = []
+max_index_lst = []
+key_corr_lst = []
 for target_byte in range(16):
     key_corr, max_index, max_val = CPA_traces_per_target_byte(pt, traces, target_byte)
+    key_corr_lst.append(key_corr)
+    max_index_lst.append(max_index)
+    # plt.plot(key_corr)
+    # plt.plot(master_key[target_byte],key_corr[master_key[target_byte]],'k*')
+    # plt.title("Max absolute correlation for every key candidate")
+    # plt.xlabel("Key Candidates")
+    # plt.ylabel("(Absolute) Correlation")
+    # image_fname = os.path.join(PATH_image, 'Max absolute correlation for every key candidate with target_byte '+ str(target_byte) + '.png')
+    # plt.savefig(image_fname)
+    #
 
-    plt.plot(key_corr)
-    plt.plot(master_key[target_byte],key_corr[master_key[target_byte]],'k*')
-    plt.title("Max absolute correlation for every key candidate")
-    plt.xlabel("Key Candidates")
-    plt.ylabel("(Absolute) Correlation")
-    image_fname = os.path.join(PATH_image, 'Max absolute correlation for every key candidate with target_byte '+ str(target_byte) + '.png')
-    plt.savefig(image_fname)
 
+spio.savemat("corr_key.mat", {'key_corr_lst': key_corr_lst, 'max_index_lst': max_index_lst}, do_compression=True, oned_as='row')
 # print(corr_matrix)
 
     
