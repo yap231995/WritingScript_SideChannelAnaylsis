@@ -162,7 +162,6 @@ key_corr_over_trunc_traces_lst = []
 for no_trace in range(100,traces.shape[0], 100):
     x_axis_value.append(no_trace)
     trunc_trace = traces[:no_trace,:]
-    #key_corr = list(os.urandom(256))
     key_corr, _,_ = CPA_traces_per_target_byte(pt, trunc_trace, target_byte) #key_corr = max correlation of each candidate key->key_corr.shape = (256,)
     key_corr_over_trunc_traces_lst.append(key_corr)
 key_corr_over_trunc_traces_lst = np.array(key_corr_over_trunc_traces_lst)
