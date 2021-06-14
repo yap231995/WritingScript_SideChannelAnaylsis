@@ -35,7 +35,7 @@ print(master_key)
 
 
 ##Experiment2
-target_byte = 5
+target_byte = 4
 key_corr_over_trunc_traces_lst_fname = os.path.join(PATH, "key_corr_over_trunc_traces_lst_target_byte"+str(target_byte)+".mat")
 key_corr_over_trunc_traces_lst_contents = spio.loadmat(key_corr_over_trunc_traces_lst_fname)
 key_corr_over_trunc_traces_lst = key_corr_over_trunc_traces_lst_contents["key_corr_over_trunc_traces_lst"]
@@ -54,6 +54,8 @@ for i in range(256):
 plt.title("Max absolute correlation for every key candidate for target_byte " + str(target_byte))
 plt.xlabel("Number of Traces")
 plt.ylabel("(Absolute) Correlation")
-plt.show()
+
 image_fname2 = os.path.join(PATH, 'abs max correlation over number of traces with target_byte '+ str(target_byte) + '.png')
 plt.savefig(image_fname2)
+
+plt.show()
