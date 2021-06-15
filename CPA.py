@@ -2,8 +2,7 @@ import random
 import numpy as np
 import os
 import scipy.io as spio
-import matplotlib.pyplot as plt
-
+#import matplotlib.pyplot as plt
 
 sbox = [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
   0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
@@ -156,20 +155,19 @@ master_key = np.array([0x2b,0x7e,0x15,0x16,0x28,0xae,0xd2,0xa6,0xab,0xf7,0x15,0x
 
 
 ###Experiment2: Do CPA over number of sample
-target_byte = 4
+target_byte = 5
 x_axis_value = []
 key_corr_over_trunc_traces_lst = []
 for no_trace in range(100,traces.shape[0], 100):
     x_axis_value.append(no_trace)
     trunc_trace = traces[:no_trace,:]
-    #key_corr = list(os.urandom(256))
     key_corr, _,_ = CPA_traces_per_target_byte(pt, trunc_trace, target_byte) #key_corr = max correlation of each candidate key->key_corr.shape = (256,)
     key_corr_over_trunc_traces_lst.append(key_corr)
 key_corr_over_trunc_traces_lst = np.array(key_corr_over_trunc_traces_lst)
 PATH_Results = os.path.join(cwd,"Results")
 PATH_Results_specific = os.path.join(PATH_Results,"AES_my_own_2021-06-09_17_51_39")
 os.chdir(PATH_Results_specific)
-spio.savemat("key_corr_over_trunc_traces_lst.mat", {'key_corr_over_trunc_traces_lst': key_corr_over_trunc_traces_lst}, do_compression=True, oned_as='row')
+spio.savemat("key_corr_over_trunc_traces_lst_target_byte"+ str(target_byte)+".mat", {'key_corr_over_trunc_traces_lst': key_corr_over_trunc_traces_lst}, do_compression=True, oned_as='row')
 os.chdir('../..')
 
 
