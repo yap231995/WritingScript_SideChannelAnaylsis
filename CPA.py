@@ -118,7 +118,7 @@ num_traces = 10000
 
 ##Read traces
 cwd = os.getcwd()
-PATH_traces = os.path.join(cwd,"AES_my_own_2021-06-10_11_48_13") ## Need to change this accordingly
+PATH_traces = os.path.join(cwd,"AES_my_own_2021-06-09_17_51_39") ## Need to change this accordingly
 PATH_image = os.path.join(PATH_traces,"images")
 if not os.path.exists(PATH_traces):
     raise("Traces Path does not exist here.")
@@ -128,7 +128,6 @@ if not os.path.exists(PATH_image):
 traces_fname = os.path.join(PATH_traces, "traces_0.mat")
 traces_contents = spio.loadmat(traces_fname)
 traces = traces_contents["traces"]
-
 traces = traces[:, 5000:17500] #Truncate the traces according to the trigger:
 
 
@@ -165,7 +164,7 @@ for no_trace in range(100,traces.shape[0], 100):
     key_corr_over_trunc_traces_lst.append(key_corr)
 key_corr_over_trunc_traces_lst = np.array(key_corr_over_trunc_traces_lst)
 PATH_Results = os.path.join(cwd,"Results")
-PATH_Results_specific = os.path.join(PATH_Results,"AES_my_own_2021-06-09_17_51_39")
+PATH_Results_specific = os.path.join(PATH_Results,"AES_2021-06-10_11_48_13")
 os.chdir(PATH_Results_specific)
 spio.savemat("key_corr_over_trunc_traces_lst_target_byte"+ str(target_byte)+".mat", {'key_corr_over_trunc_traces_lst': key_corr_over_trunc_traces_lst}, do_compression=True, oned_as='row')
 os.chdir('../..')
