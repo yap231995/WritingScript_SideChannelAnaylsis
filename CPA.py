@@ -114,23 +114,10 @@ def Corr_with_correct_key(pt,traces,master_key, target_byte):
 
 cwd = os.getcwd()
 PATH = os.path.join(cwd,"plaintext_folder")
-num_traces = 10000
 
-##Read traces
-cwd = os.getcwd()
-PATH_traces = os.path.join(cwd,"AES_my_own_2021-06-09_17_51_39") ## Need to change this accordingly
-PATH_image = os.path.join(PATH_traces,"images")
-if not os.path.exists(PATH_traces):
-    raise("Traces Path does not exist here.")
-if not os.path.exists(PATH_image):
-    os.makedirs(PATH_image)
-
-traces_fname = os.path.join(PATH_traces, "traces_0.mat")
-traces_contents = spio.loadmat(traces_fname)
-traces = traces_contents["traces"]
-traces = traces[:, 5000:17500] #Truncate the traces according to the trigger:
-
-
+no_combinations = 10
+traces_per_file = 1000 #make sure in sequence it is set to this number.
+num_traces = traces_per_file * no_combinations
 
 ##Read the plaintext
 PATH_plaintext = os.path.join(cwd,"plaintext_folder")
@@ -141,34 +128,61 @@ pt = pt[:num_traces]
 print("Finished loading Plaintext")
 
 master_key = np.array([0x2b,0x7e,0x15,0x16,0x28,0xae,0xd2,0xa6,0xab,0xf7,0x15,0x88,0x09,0xcf,0x4f,0x3c])
-####Experiment1: Do CPA for each byte find the max abs correlation for every key candidate using all the traces
-# max_index_lst = []
-# key_corr_lst = []
-# for target_byte in range(16):
-#     key_corr, max_index, max_val = CPA_traces_per_target_byte(pt, traces, target_byte)
-#     key_corr_lst.append(key_corr)
-#     max_index_lst.append(max_index)
-# spio.savemat("corr_key.mat", {'key_corr_lst': key_corr_lst, 'max_index_lst': max_index_lst}, do_compression=True, oned_as='row')
-# load it and use corr_key_to_image.py in Experiment 1 for all graph and obtain the graph.
 
+##Read traces
+cwd = os.getcwd()
+PATH_traces = os.path.join(cwd,"AES_Fixslicing_opt32_2021-06-23_18_15_40") ## Need to change this accordingly
+PATH_image = os.path.join(PATH_traces,"images")
+if not os.path.exists(PATH_traces):
+    raise("Traces Path does not exist here.")
+if not os.path.exists(PATH_image):
+    os.makedirs(PATH_image)
+
+traces_fname = os.path.join(PATH_traces, "traces_0.mat")
+traces_contents = spio.loadmat(traces_fname)
+traces_in_one_file = traces_contents["traces"]
+traces = traces_in_one_file[:, 2500:22500]
+for file_no in range(1,no_combinations):
+    traces_fname = os.path.join(PATH_traces, "traces_"+str(file_no)+".mat")
+    traces_contents = spio.loadmat(traces_fname)
+    traces_in_one_file = traces_contents["traces"]
+    traces_in_one_file = traces_in_one_file[:, 2500:22500] #Truncate the traces according to the trigger:
+    traces = np.concatenate((traces,traces_in_one_file), axis = 0)
+print(traces.shape)
+## Path to save file.
+PATH_Results = os.path.join(cwd,"Results")
+PATH_Results_specific = os.path.join(PATH_Results,"AES_Fixslicing_C_2021-06-23_18_15_40")
+if not os.path.exists(PATH_Results_specific):
+    os.mkdir(PATH_Results_specific)
+os.chdir(PATH_Results_specific)
+
+####Experiment1: Do CPA for each byte find the max abs correlation for every key candidate using all the traces
+max_index_lst = []
+key_corr_lst = []
+for target_byte in range(16):
+    key_corr, max_index, max_val = CPA_traces_per_target_byte(pt, traces, target_byte)
+    key_corr_lst.append(key_corr)
+    max_index_lst.append(max_index)
+spio.savemat("corr_key.mat", {'key_corr_lst': key_corr_lst, 'max_index_lst': max_index_lst}, do_compression=True, oned_as='row')
+
+
+# Pipeline: load it and use corr_key_to_image.py in Experiment 1 for all graph and obtain the graph.
 
 
 ###Experiment2: Do CPA over number of sample
-target_byte = 5
-x_axis_value = []
-key_corr_over_trunc_traces_lst = []
-for no_trace in range(100,traces.shape[0], 100):
-    x_axis_value.append(no_trace)
-    trunc_trace = traces[:no_trace,:]
-    key_corr, _,_ = CPA_traces_per_target_byte(pt, trunc_trace, target_byte) #key_corr = max correlation of each candidate key->key_corr.shape = (256,)
-    key_corr_over_trunc_traces_lst.append(key_corr)
-key_corr_over_trunc_traces_lst = np.array(key_corr_over_trunc_traces_lst)
-PATH_Results = os.path.join(cwd,"Results")
-PATH_Results_specific = os.path.join(PATH_Results,"AES_2021-06-10_11_48_13")
-os.chdir(PATH_Results_specific)
-spio.savemat("key_corr_over_trunc_traces_lst_target_byte"+ str(target_byte)+".mat", {'key_corr_over_trunc_traces_lst': key_corr_over_trunc_traces_lst}, do_compression=True, oned_as='row')
-os.chdir('../..')
+# target_byte = 5
+# x_axis_value = []
+# key_corr_over_trunc_traces_lst = []
+# for no_trace in range(100,traces.shape[0], 100):
+#     x_axis_value.append(no_trace)
+#     trunc_trace = traces[:no_trace,:]
+#     key_corr, _,_ = CPA_traces_per_target_byte(pt, trunc_trace, target_byte) #key_corr = max correlation of each candidate key->key_corr.shape = (256,)
+#     key_corr_over_trunc_traces_lst.append(key_corr)
+# key_corr_over_trunc_traces_lst = np.array(key_corr_over_trunc_traces_lst)
+# spio.savemat("key_corr_over_trunc_traces_lst_target_byte"+ str(target_byte)+".mat", {'key_corr_over_trunc_traces_lst': key_corr_over_trunc_traces_lst}, do_compression=True, oned_as='row')
+# os.chdir('../..')
 
+# Pipeline: load it and use corr_key_to_image.py in Experiment 2 for all graph and obtain the graph.
 
 
 
