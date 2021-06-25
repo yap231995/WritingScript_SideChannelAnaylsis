@@ -157,31 +157,31 @@ if not os.path.exists(PATH_Results_specific):
 os.chdir(PATH_Results_specific)
 
 ####Experiment1: Do CPA for each byte find the max abs correlation for every key candidate using all the traces
-max_index_lst = []
-key_corr_lst = []
-for target_byte in range(16):
-    key_corr, max_index, max_val = CPA_traces_per_target_byte(pt, traces, target_byte)
-    key_corr_lst.append(key_corr)
-    max_index_lst.append(max_index)
-spio.savemat("corr_key.mat", {'key_corr_lst': key_corr_lst, 'max_index_lst': max_index_lst}, do_compression=True, oned_as='row')
+#max_index_lst = []
+#key_corr_lst = []
+#for target_byte in range(16):
+#    key_corr, max_index, max_val = CPA_traces_per_target_byte(pt, traces, target_byte)
+#    key_corr_lst.append(key_corr)
+#    max_index_lst.append(max_index)
+#spio.savemat("corr_key.mat", {'key_corr_lst': key_corr_lst, 'max_index_lst': max_index_lst}, do_compression=True, oned_as='row')
 
 
 # Pipeline: load it and use corr_key_to_image.py in Experiment 1 for all graph and obtain the graph.
 
 
-###Experiment2: Do CPA over number of sample
-# target_byte = 5
-# x_axis_value = []
-# key_corr_over_trunc_traces_lst = []
-# for no_trace in range(100,traces.shape[0], 100):
-#     x_axis_value.append(no_trace)
-#     trunc_trace = traces[:no_trace,:]
-#     key_corr, _,_ = CPA_traces_per_target_byte(pt, trunc_trace, target_byte) #key_corr = max correlation of each candidate key->key_corr.shape = (256,)
-#     key_corr_over_trunc_traces_lst.append(key_corr)
-# key_corr_over_trunc_traces_lst = np.array(key_corr_over_trunc_traces_lst)
-# spio.savemat("key_corr_over_trunc_traces_lst_target_byte"+ str(target_byte)+".mat", {'key_corr_over_trunc_traces_lst': key_corr_over_trunc_traces_lst}, do_compression=True, oned_as='row')
-# os.chdir('../..')
-
+###Experiment2: Do CPA over number of sample 
+target_byte = 4
+x_axis_value = []
+key_corr_over_trunc_traces_lst = []
+for no_trace in range(100,traces.shape[0], 100):
+    x_axis_value.append(no_trace)
+    trunc_trace = traces[:no_trace,:]
+    key_corr, _,_ = CPA_traces_per_target_byte(pt, trunc_trace, target_byte) #key_corr = max correlation of each candidate key->key_corr.shape = (256,)
+    key_corr_over_trunc_traces_lst.append(key_corr)
+key_corr_over_trunc_traces_lst = np.array(key_corr_over_trunc_traces_lst)
+spio.savemat("key_corr_over_trunc_traces_lst_target_byte"+ str(target_byte)+".mat", {'key_corr_over_trunc_traces_lst': key_corr_over_trunc_traces_lst}, do_compression=True, oned_as='row')
+os.chdir('../..')
+sleep(1)
 # Pipeline: load it and use corr_key_to_image.py in Experiment 2 for all graph and obtain the graph.
 
 
